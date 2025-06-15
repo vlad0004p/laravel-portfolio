@@ -17,6 +17,16 @@ Route::get('/health', function () {
     ]);
 });
 
+// Simple debug route to check environment
+Route::get('/env-debug', function () {
+    return response()->json([
+        'APP_DEBUG' => $_ENV['APP_DEBUG'] ?? 'not set',
+        'APP_DEBUG_config' => config('app.debug'),
+        'APP_ENV' => $_ENV['APP_ENV'] ?? 'not set',
+        'all_env_keys' => array_keys($_ENV)
+    ]);
+});
+
 // Debug route to test view rendering
 Route::get('/debug', function () {
     try {
