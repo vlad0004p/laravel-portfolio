@@ -6,7 +6,7 @@ WORKDIR /app
 # Allow Composer to run as root
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Copy full app first to allow artisan commands to run correctly
+# Copy full app to allow artisan commands to work
 COPY . .
 
 # Install PHP dependencies without dev packages
@@ -30,25 +30,30 @@ WORKDIR /var/www/html
 # Copy Laravel app from build stage
 COPY --from=build-stage /app /var/www/html
 
-# Set Apache DocumentRoot to /public
+# Set Apache DocumentRoot to Laravel's public folder
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 
 # Update Apache config to use new DocumentRoot
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf && \
     sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Set proper permissions for Laravel
-RUN chmod -R 775 storage bootstrap/cache \
- && chown -R www-data:www-data /var/www/html
+# Set correct permissions for Laravel
+RUN chmod -R 775 storage bootstrap/cache && \
+    chown -R www-data:www-data /var/www/html
 
-# Run Laravel setup commands
-RUN php artisan config:clear && \
+# Clear and rebuild Laravel caches
+RUN php artisan view:clear && \
+    php artisan config:clear && \
+    php artisan route:clear && \
+    php artisan cache:clear && \
     php artisan config:cache && \
-    php artisan route:cache && \
     php artisan view:cache && \
-    php artisan storage:link || true
+    php artisan route:cache
 
-# Expose port 80
+# Optional: create storage symlink if needed
+RUN php artisan storage:link || true
+
+# Expose Apache port
 EXPOSE 80
 
 # Start Apache
