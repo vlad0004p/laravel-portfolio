@@ -1,0 +1,78 @@
+table {
+  display: flex;
+  font-size: 15px;
+  width: 85%;
+  margin-top: 12%;
+  margin-bottom: 1%;
+  margin-left: 7%;
+}
+
+th {
+  border: 3px solid #ffffff;
+  padding: 5px;
+}
+
+tr {
+  border: 3px solid #ffffff;
+  padding: 5px;
+}
+
+td {
+  border: 3px solid #ffffff;
+  padding: 5px;
+}
+
+.check-box {
+  display: block;
+  position: relative;
+  cursor: pointer;
+  bottom: 0px;
+  left: 13px;
+}
+
+.dashboard-info {
+  margin-left: 11%;
+  margin-bottom: 50px;
+}
+
+.dashboard-bar {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10%;
+}
+
+.dashboard-bar p {
+  margin-bottom: 20px;
+  margin-left: 5%;
+  font-size: 20px;
+}
+
+.progress-bar {
+  border: 1px solid rgba(255, 161, 238);
+  border-radius: 10px;
+  width: 90%;
+  background-color: #ffffff;
+}
+
+.progress-level {
+  height: 15px;
+  background: rgba(255, 161, 238);
+  border-radius: 5px;
+}
+
+#NBSA {
+  margin-left: 50%;
+  margin-bottom: 60px;
+}
+
+.failingGrade {
+  background-color: rgba(255, 0, 0, 0.297);
+}
+
+.passingGrade {
+  background-color: rgba(0, 255, 115, 0.358);
+}
+
+.nullGrade {
+  background-color: #b85b9f;
+}

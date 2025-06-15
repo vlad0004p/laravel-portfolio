@@ -1,0 +1,145 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background: #b85b9f;
+  color: #ffffff;
+}
+
+.header {
+  display: flex;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px 10%;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 50;
+}
+
+.logo {
+  font-family: 'Brush Script MT', cursive;
+  font-size: 40px;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.navbar ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  left: 55%;
+}
+
+.navbar li {
+  float: left;
+}
+
+.navbar li a {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: .5s;
+  display: block;
+  text-align: center;
+  padding: 14px 16px;
+}
+
+.navbar li a:hover:not(.active) {
+  color: rgba(255, 161, 238, 0.596);
+}
+
+.active {
+  background-color: rgba(255, 161, 238, 0.269);
+  border-radius: 30px;
+  transition: 5s;
+}
+
+.sidenav {
+  height: 100%;
+  width: 0;
+  top: 0%;
+  right: 0%;
+  display: none;
+  position: fixed;
+  background-color: #ffafef;
+}
+
+nav {
+  position: fixed;
+  z-index: 100;
+  width: 100%;
+  height: 100px;
+  top: 0;
+}
+
+.navbar {
+  background-color: #b85b9f;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.sidenav a {
+  padding: 11px 8px 8px 32px;
+  text-decoration: none;
+  color: var(--white);
+  display: block;
+}
+
+.closebtn {
+  font-size: 40px;
+}
+
+footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-left: 10%;
+  padding-right: 10%;
+  margin-bottom: 5%;
+}
+
+.HZ-logo img {
+  background: transparent;
+  display: flex;
+  max-width: 40px;
+}
+
+button {
+  text-decoration: none;
+  background-color: #b85b9f;
+  color: #ffffff;
+  width: 100px;
+  padding: 10px;
+  border-radius: 7px;
+  border: 2px solid #ffffff;
+}
+
+.foot {
+  width: 170px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.foot a {
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  font-size: 35px;
+  color: #ffffff;
+  text-decoration: none;
+}

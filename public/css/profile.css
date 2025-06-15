@@ -1,0 +1,71 @@
+main {
+  display: flex;
+  flex-direction: column;
+}
+
+.banner-image img {
+  display: flex;
+  margin-top: 10%;
+  margin-left: 5%;
+  margin-bottom: 5%;
+  width: 90%;
+  height: 100%;
+  opacity: 0.8;
+}
+
+.skills {
+  display: flex;
+  flex-direction: row;
+}
+
+.soft-skills {
+  float: left;
+  margin-left: 7%;
+  width: 200px;
+}
+
+.skill {
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 161, 238);
+  border-radius: 5px;
+  margin-bottom: 2%;
+  background-color: #ffffff;
+  width: 250%;
+}
+
+.skill_level {
+  height: 15px;
+  background: rgba(255, 161, 238);
+  border-radius: 5px;
+}
+
+.hard-skills {
+  float: left;
+  margin-left: 31%;
+  width: 200px;
+}
+
+.hobby {
+  display: flex;
+  margin-top: 5%;
+  margin-bottom: 3%;
+  margin-left: 40%;
+  font-size: 40px;
+}
+
+.profile-hobby {
+  display: flex;
+  flex-direction: row;
+  margin-left: 10%;
+  margin-bottom: 5%;
+}
+
+#acro-image {
+  width: 55%;
+}
+
+video {
+  width: 320px;
+  display: flex;
+  margin-left: 5%;
+}

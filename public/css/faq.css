@@ -1,0 +1,54 @@
+.FAQ {
+  display: flex;
+  margin-left: 32%;
+  margin-top: 10%;
+}
+
+.faq {
+  display: flex;
+  flex-direction: column;
+  margin-top: 2%;
+  max-width: 50%;
+  margin-left: 25%;
+  margin-bottom: 4%;
+}
+
+details {
+  display: flex;
+  margin-bottom: 2%;
+  padding-bottom: 15px;
+  padding-left: 5px;
+  border: 3px solid #ffafef;
+  border-radius: 10px;
+}
+
+summary {
+  font-size: 20px;
+}
+
+.answers {
+  max-width: 97%;
+  padding-top: 2px;
+  font-size: 16px;
+  border-top: solid #ffffff;
+}
+
+ol {
+  margin-left: 4%;
+}
+
+.create {
+    width: 15%;
+    margin-left: 42%;
+}
+
+.button-edit {
+    margin-bottom: 2%;
+    margin-top: 2%;
+    margin-left: 30%;
+}
+
+.button-delete {
+    margin-left: 50%;
+    margin-top: -9%;
+}

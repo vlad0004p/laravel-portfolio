@@ -1,0 +1,93 @@
+.heading {
+    display: flex;
+    margin-top: 10%;
+    margin-left: 20%;
+    font-size: 30px;
+}
+
+.page-1 {
+    display: flex;
+    flex-direction: row;
+    margin-top: 4%;
+    margin-left: 12%;
+    margin-bottom: 10%;
+}
+
+.image1 {
+    display: flex;
+    width: 360px;
+    height: 470px;
+}
+
+.home-content {
+    display: flex;
+    flex-direction: column;
+    margin-top: 0%;
+    margin-left: 10%;
+    justify-content: space-between;
+}
+
+.quote {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 2px inset rgba(255, 161, 238, 0.596);
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.quote1 {
+    font-size: 25px;
+}
+
+.quote2 {
+    text-align: end;
+    font-size: 18px;
+}
+
+.home-paragraph {
+    display: flex;
+    margin-left: 2%;
+    max-width: 465px;
+    font-size: 15px;
+    justify-content: space-between;
+}
+
+.page-2 {
+    display: flex;
+    flex-direction: row;
+    margin-top: 4%;
+    margin-left: 12%;
+    margin-bottom: 5%;
+}
+
+.home-content2 {
+    display: flex;
+    flex-direction: column;
+    max-width: 475px;
+}
+
+.home-font1 {
+    font-size: 35px;
+    margin-bottom: 3%;
+    margin-left: 4%;
+}
+
+.home-font2 {
+    font-size: 25px;
+    margin-bottom: 3%;
+}
+
+.head2-home-content2 {
+    font-size: 20px;
+    margin-top: 2%;
+    margin-left: 20px;
+}
+
+.image2 {
+    display: flex;
+    margin-left: 27%;
+    width: 380px;
+    height: 470px;
+}

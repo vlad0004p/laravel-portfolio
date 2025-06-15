@@ -1,0 +1,35 @@
+.error-items {
+    display: flex;
+    flex-direction: row;
+    margin-top: 90px;
+    margin-bottom: 20px;
+}
+
+.error-text {
+    display: flex;
+    flex-direction: column;
+    margin-left: 200px;
+    margin-top: 50px;
+}
+
+.number {
+    font-size: 100px;
+    }
+
+.error-explain {
+    font-size: 40px;
+    padding-bottom: 10px;
+}
+
+
+
+.image1 {
+    display: flex;
+    width: 420px;
+    height: 470px;
+    margin-left: 100px;
+}
+
+.arrow {
+
+}
