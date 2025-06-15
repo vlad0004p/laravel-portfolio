@@ -4,9 +4,11 @@ FROM composer:2.7 AS composer-stage
 WORKDIR /app
 
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --prefer-dist --no-progress --no-interaction
+RUN composer install --no-dev --prefer-dist --no-progress --no-interaction --no-scripts
 
 COPY . .
+
+RUN php artisan package:discover --ansi
 
 ### Stage 2: Node build stage (for Laravel Mix/Vite)
 FROM node:20 AS node-stage
