@@ -17,6 +17,36 @@ Route::get('/health', function () {
     ]);
 });
 
+// Debug route to test view rendering
+Route::get('/debug', function () {
+    try {
+        return response()->json([
+            'views_exist' => [
+                'welcome' => view()->exists('welcome'),
+                'layouts.app' => view()->exists('layouts.app'),
+            ],
+            'storage_writable' => is_writable(storage_path()),
+            'cache_writable' => is_writable(storage_path('framework/cache')),
+            'env_vars' => [
+                'APP_ENV' => env('APP_ENV'),
+                'APP_DEBUG' => env('APP_DEBUG'),
+                'DB_CONNECTION' => env('DB_CONNECTION'),
+            ]
+        ]);
+    } catch (Exception $e) {
+        return response()->json([
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ], 500);
+    }
+});
+
+// Simple test route that doesn't use views
+Route::get('/test', function () {
+    return '<h1>Simple Test Route Works!</h1><p>Laravel is running properly.</p>';
+});
+
+
 /*
 |--------------------------------------------------------------------------
 | Public route: Welcome page
