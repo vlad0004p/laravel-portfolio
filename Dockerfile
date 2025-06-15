@@ -1,35 +1,31 @@
-FROM composer:2.6 AS vendor
+# Stage 1: Build dependencies
+FROM composer:2 AS vendor
 
 WORKDIR /app
 
-COPY composer.json composer.lock ./
+# Copy the full Laravel project, not just composer.json
+COPY . .
+
 RUN composer install --no-dev --prefer-dist --no-progress --no-interaction
 
+# Stage 2: Build application
 FROM php:8.2-apache
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
-# Install system dependencies
+# Install PHP extensions (typical for Laravel)
 RUN apt-get update && apt-get install -y \
-    git unzip curl libpq-dev libzip-dev zip libonig-dev libxml2-dev libpng-dev libjpeg-dev libfreetype6-dev \
-    && docker-php-ext-install pdo pdo_mysql zip
+    libzip-dev zip unzip git curl libpng-dev libonig-dev libxml2-dev \
+    && docker-php-ext-install pdo pdo_mysql zip mbstring exif pcntl
 
-# Copy Laravel project files
-COPY . /var/www/html/
-
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage
-
-# Set working directory
 WORKDIR /var/www/html
 
-# Use the previously installed vendor deps
-COPY --from=vendor /app/vendor ./vendor
+COPY --from=vendor /app /var/www/html
 
-# Laravel environment
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+# Set proper permissions for Laravel
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html
 
-# Expose port 80
-EXPOSE 80
+# Copy Apache vhost config if needed (optional)
+# COPY vhost.conf /etc/apache2/sites-available/000-default.conf
