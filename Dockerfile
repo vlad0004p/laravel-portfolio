@@ -1,4 +1,4 @@
-# Stage 1: Build dependencies
+# Stage 1: Composer build
 FROM composer:2.6 AS build-stage
 
 WORKDIR /app
@@ -6,17 +6,20 @@ WORKDIR /app
 # Allow Composer to run as root
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Copy only composer files first to leverage Docker cache
-COPY composer.json composer.lock ./
-
-# Install PHP dependencies without dev tools
-RUN composer install --no-dev --prefer-dist --no-progress --no-interaction
-
-# Copy the rest of the app files
+# Copy full app first to allow artisan commands to run correctly
 COPY . .
 
-# Stage 2: Runtime environment
+# Install PHP dependencies without dev packages
+RUN composer install --no-dev --prefer-dist --no-progress --no-interaction
+
+
+# Stage 2: PHP + Apache Runtime
 FROM php:8.2-apache
+
+# Install system dependencies and PHP extensions required by Laravel
+RUN apt-get update && apt-get install -y \
+    libzip-dev unzip libpng-dev libonig-dev libxml2-dev zip curl git \
+    && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath zip
 
 # Enable Apache rewrite module
 RUN a2enmod rewrite
@@ -24,22 +27,21 @@ RUN a2enmod rewrite
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy app files from build stage
+# Copy Laravel app from build stage
 COPY --from=build-stage /app /var/www/html
 
-# Set correct permissions (Apache user)
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html
-
-# Set document root if needed (for Laravel public folder)
+# Set Apache DocumentRoot to /public
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 
-# Update Apache config for new document root
+# Update Apache config
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf && \
     sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Expose Apache HTTP port
+# Set permissions
+RUN chown -R www-data:www-data /var/www/html && chmod -R 755 /var/www/html
+
+# Expose port 80
 EXPOSE 80
 
-# Start Apache in foreground
+# Start Apache
 CMD ["apache2-foreground"]
