@@ -33,12 +33,20 @@ COPY --from=build-stage /app /var/www/html
 # Set Apache DocumentRoot to /public
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 
-# Update Apache config
+# Update Apache config to use new DocumentRoot
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf && \
     sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html && chmod -R 755 /var/www/html
+# Set proper permissions for Laravel
+RUN chmod -R 775 storage bootstrap/cache \
+ && chown -R www-data:www-data /var/www/html
+
+# Run Laravel setup commands
+RUN php artisan config:clear && \
+    php artisan config:cache && \
+    php artisan route:cache && \
+    php artisan view:cache && \
+    php artisan storage:link || true
 
 # Expose port 80
 EXPOSE 80
