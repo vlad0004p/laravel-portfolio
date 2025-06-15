@@ -67,6 +67,7 @@ RUN echo '#!/bin/bash' > /startup.sh && \
     echo 'fi' >> /startup.sh && \
     echo '' >> /startup.sh && \
     echo 'echo "=== RUNNING LARAVEL SETUP ==="' >> /startup.sh && \
+    echo 'php artisan migrate --force' >> /startup.sh && \
     echo 'php artisan config:cache' >> /startup.sh && \
     echo 'php artisan route:cache' >> /startup.sh && \
     echo 'php artisan view:cache' >> /startup.sh && \

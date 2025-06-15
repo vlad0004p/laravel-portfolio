@@ -15,6 +15,10 @@ services:
         value: base64:xBjDMNEY8X2kfIIKrvpsHyLIabhyHsSDde2oyzUDDpo=
       - key: APP_DEBUG
         value: true
+      - key: APP_URL
+        value: https://laravel-portfolio-2mkg.onrender.com
+      - key: FORCE_HTTPS
+        value: true
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
