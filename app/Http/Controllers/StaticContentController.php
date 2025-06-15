@@ -17,11 +17,6 @@ class StaticContentController extends Controller
         return view('profile') ;
     }
 
-    public function dashboard()
-    {
-        return view('dashboard') ;
-    }
-
     public function blog()
     {
         return view('blog');

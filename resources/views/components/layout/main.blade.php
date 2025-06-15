@@ -22,27 +22,33 @@
         <ul>
             <li><a href="{{route('index')}}">Home</a></li>
             <li><a href="{{route('profile')}}">Profile</a></li>
-            <li><a href="{{route('dashboard')}}">Dashboard</a></li>
             <li><a href="{{route('faq')}}">FAQ</a></li>
             <li><a href="{{route('blog')}}">Blog</a></li>
         </ul>
 
-        <div id="mySidenav" class="sidenav"><br>
-            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-            <a target="_blank"
-               href="https://hz.nl/uploads/documents/1.4-Over-de-HZ/1.4.3.-Regelingen-en-documenten/OERS/2023-2024/Juli/CER-HZ-Bachelor-full-time-2023-2024-DEF-version-20230720.pdf">HZ
-                HBO-ICT Course and Exam Regultaions</a>
-            <a target="_blank"
-               href="https://hz.nl/uploads/documents/1.4-Over-de-HZ/1.4.3.-Regelingen-en-documenten/OERS/2023-2024/Juli/TWE/IR-B-HBO-ICT-full-time-2023-2024-DEF.pdf">The
-                implementation Regulations</a>
-            <a target="_blank" href="https://learn.hz.nl/my/">Learn environment</a>
-            <a target="_blank"
-               href="https://teams.microsoft.com/_#/school/conversations/General?threadId=19:2e2afa0286b04932be16cb8ad2d9d2c0@thread.skype&ctx=channel">MS
-                Teams</a>
-            <a target="_blank" href="#">MyHZ progress</a>
-            <a target="_blank" href="https://github.com/HZ-HBO-ICT">GitHub</a>
-        </div>
-        <span style="font-size:30px; cursor:pointer" onclick="openNav()">&#9776;</span>
+        @auth
+            <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                @csrf
+                <button type="submit" class="logout-button">Logout</button>
+            </form>
+        @endauth
+
+{{--        <div id="mySidenav" class="sidenav"><br>--}}
+{{--            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>--}}
+{{--            <a target="_blank"--}}
+{{--               href="https://hz.nl/uploads/documents/1.4-Over-de-HZ/1.4.3.-Regelingen-en-documenten/OERS/2023-2024/Juli/CER-HZ-Bachelor-full-time-2023-2024-DEF-version-20230720.pdf">HZ--}}
+{{--                HBO-ICT Course and Exam Regultaions</a>--}}
+{{--            <a target="_blank"--}}
+{{--               href="https://hz.nl/uploads/documents/1.4-Over-de-HZ/1.4.3.-Regelingen-en-documenten/OERS/2023-2024/Juli/TWE/IR-B-HBO-ICT-full-time-2023-2024-DEF.pdf">The--}}
+{{--                implementation Regulations</a>--}}
+{{--            <a target="_blank" href="https://learn.hz.nl/my/">Learn environment</a>--}}
+{{--            <a target="_blank"--}}
+{{--               href="https://teams.microsoft.com/_#/school/conversations/General?threadId=19:2e2afa0286b04932be16cb8ad2d9d2c0@thread.skype&ctx=channel">MS--}}
+{{--                Teams</a>--}}
+{{--            <a target="_blank" href="#">MyHZ progress</a>--}}
+{{--            <a target="_blank" href="https://github.com/HZ-HBO-ICT">GitHub</a>--}}
+{{--        </div>--}}
+{{--        <span style="font-size:30px; cursor:pointer" onclick="openNav()">&#9776;</span>--}}
     </header>
 </nav>
 
