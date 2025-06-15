@@ -1,4 +1,4 @@
-# Stage 1: Composer + Node setup
+# Stage 1: Composer + Node + PHP build tools
 FROM php:8.2-cli AS build
 
 # Install system dependencies
@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y \
     unzip git curl libzip-dev libpng-dev libonig-dev libxml2-dev libpq-dev \
     zip nodejs npm
 
-# Install PHP extensions
+# PHP extensions for Laravel
 RUN docker-php-ext-install pdo pdo_pgsql mbstring zip xml bcmath
 
 # Copy Composer
@@ -14,10 +14,10 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
-# Copy app files
+# Copy project files
 COPY . .
 
-# Make sure .env exists before composer install (Laravel needs it)
+# Prepare .env
 RUN cp .env.example .env
 
 # Install PHP dependencies
@@ -29,30 +29,27 @@ RUN php artisan key:generate
 # Build frontend
 RUN npm install && npm run build
 
-# Run DB migrations (optional if you want them baked in)
-# RUN php artisan migrate --seed
+---
 
-### ---
-
-# Stage 2: Production PHP + Apache
+# Stage 2: Runtime environment with Apache
 FROM php:8.2-apache
+
+# Install dependencies required to install PHP extensions
+RUN apt-get update && apt-get install -y \
+    libzip-dev libpng-dev libonig-dev libxml2-dev libpq-dev
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
-# Install PHP extensions again for runtime
-RUN apt-get update && apt-get install -y libpq-dev \
-    && docker-php-ext-install pdo pdo_pgsql mbstring zip xml bcmath
+# Install only runtime PHP extensions
+RUN docker-php-ext-install pdo pdo_pgsql mbstring zip xml bcmath
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy app from build stage
+# Copy built app from previous stage
 COPY --from=build /app /var/www/html
 
 # Set correct permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
-
-# Expose port
-EXPOSE 80
