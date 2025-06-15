@@ -8,58 +8,22 @@ services:
     dockerfilePath: ./Dockerfile
     envVars:
       - key: APP_NAME
-        value: "Polly's Website"
+        value: "Laravel Portfolio"
       - key: APP_ENV
         value: production
       - key: APP_KEY
         value: base64:xBjDMNEY8X2kfIIKrvpsHyLIabhyHsSDde2oyzUDDpo=
       - key: APP_DEBUG
-        value: true  # Enable debug temporarily
-      - key: APP_URL
-        fromService:
-          type: web
-          name: laravel-portfolio
-          property: host
-      - key: DB_CONNECTION
-        value: pgsql
-      - key: DB_HOST
-        value: dpg-d178jhgdl3ps73a5o7d0-a
-      - key: DB_PORT
-        value: 5432
-      - key: DB_DATABASE
-        value: laravel_portfolio_db_3k2n
-      - key: DB_USERNAME
-        value: laravel_portfolio_db_3k2n_user
-      - key: DB_PASSWORD
-        value: HgjNNxdG1JqVqIBo8PwIQsudR3IBJTNK
-      - key: LOG_CHANNEL
-        value: stack
-      - key: LOG_LEVEL
-        value: debug
-      - key: CACHE_DRIVER
-        value: file
-      - key: SESSION_DRIVER
-        value: file
-      - key: QUEUE_CONNECTION
-        value: sync
-      # Additional debugging vars
-      - key: FILESYSTEM_DISK
-        value: local
-      - key: SESSION_LIFETIME
-        value: 120
-    buildCommand: |
-      echo "Build completed in Dockerfile"
+        value: true
     startCommand: |
-      echo "Starting Laravel application..." &&
-      php artisan config:clear &&
-      php artisan cache:clear &&
-      php artisan storage:link --force &&
-      php artisan config:cache &&
-      php artisan route:cache &&
-      php artisan view:cache &&
-      echo "Running migrations..." &&
-      php artisan migrate --force &&
-      echo "Checking public directory..." &&
-      ls -la public/ &&
+      echo "=== STARTING BASIC TEST ===" &&
+      echo "Checking Apache config..." &&
+      apache2ctl -t &&
+      echo "Testing PHP..." &&
+      php -v &&
+      echo "Checking document root..." &&
+      ls -la /var/www/html/public/ &&
+      echo "Testing basic PHP file..." &&
+      php -r "echo 'PHP is working';" &&
       echo "Starting Apache..." &&
       apache2-foreground

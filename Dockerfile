@@ -1,51 +1,52 @@
-# Stage 1: Composer build
-FROM composer:2.6 AS composer-build
-
-WORKDIR /app
-ENV COMPOSER_ALLOW_SUPERUSER=1
-
-COPY . .
-RUN composer install --no-dev --prefer-dist --no-progress --no-interaction --optimize-autoloader
-
-# Stage 2: PHP + Apache Runtime
+# Let's start with a very basic setup to isolate the issue
 FROM php:8.2-apache
 
-# Install system dependencies and PHP extensions for Laravel + PostgreSQL
+# Install only essential extensions
 RUN apt-get update && apt-get install -y \
-    libzip-dev unzip libpng-dev libonig-dev libxml2-dev zip curl git \
     libpq-dev \
-    && docker-php-ext-install pdo pdo_pgsql pdo_mysql mbstring exif pcntl bcmath zip \
+    && docker-php-ext-install pdo pdo_pgsql \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Enable Apache rewrite module
 RUN a2enmod rewrite
 
+# Set ServerName to avoid warnings
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
+# Copy everything
+COPY . /var/www/html/
+
+# Install Composer
+COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
+
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy Laravel app from composer build stage
-COPY --from=composer-build /app /var/www/html
+# Install dependencies
+RUN composer install --no-dev --optimize-autoloader || echo "Composer install failed"
 
-# Set Apache DocumentRoot to Laravel's public folder
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+# Create basic test files
+RUN echo "<?php phpinfo(); ?>" > /var/www/html/public/phpinfo.php
+RUN echo "<h1>Basic HTML Test</h1><p>If you see this, Apache is working</p>" > /var/www/html/public/test.html
 
-# Update Apache config to use new DocumentRoot
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf && \
-    sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+# Set Apache DocumentRoot
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Create Laravel required directories
+# Create storage directories
 RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache
 
-# Set correct permissions for Laravel
+# Set permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html \
     && chmod -R 775 storage bootstrap/cache
 
-# Create storage symlink for file access
-RUN php artisan storage:link || true
+# Show structure for debugging
+RUN echo "=== Directory Structure ===" && \
+    ls -la /var/www/html/ && \
+    echo "=== Public Directory ===" && \
+    ls -la /var/www/html/public/
 
-# Expose Apache port
 EXPOSE 80
-
-# Start Apache
 CMD ["apache2-foreground"]
