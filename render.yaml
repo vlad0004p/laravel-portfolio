@@ -7,10 +7,21 @@ services:
     branch: main
     dockerfilePath: ./Dockerfile
     envVars:
+      - key: APP_NAME
+        value: "Polly's Website"
       - key: APP_ENV
         value: production
       - key: APP_KEY
-        generateValue: true
+        value: base64:xBjDMNEY8X2kfIIKrvpsHyLIabhyHsSDde2oyzUDDpo=
+      - key: APP_DEBUG
+        value: false
+      - key: APP_URL
+        fromService:
+          type: web
+          name: laravel-portfolio
+          property: host
+      - key: DB_CONNECTION
+        value: pgsql
       - key: DB_HOST
         value: dpg-d178jhgdl3ps73a5o7d0-a
       - key: DB_PORT
@@ -21,5 +32,21 @@ services:
         value: laravel_portfolio_db_3k2n_user
       - key: DB_PASSWORD
         value: HgjNNxdG1JqVqIBo8PwIQsudR3IBJTNK
+      - key: LOG_CHANNEL
+        value: stack
+      - key: LOG_LEVEL
+        value: error
+      - key: CACHE_DRIVER
+        value: file
+      - key: SESSION_DRIVER
+        value: file
+      - key: QUEUE_CONNECTION
+        value: sync
+    buildCommand: |
+      echo "Build completed in Dockerfile"
     startCommand: |
-      php artisan migrate --seed && apache2-foreground
+      php artisan config:cache &&
+      php artisan route:cache &&
+      php artisan view:cache &&
+      php artisan migrate --force &&
+      apache2-foreground
