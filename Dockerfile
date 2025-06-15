@@ -47,6 +47,7 @@ RUN echo '#!/bin/bash' > /start.sh && \
     echo 'echo "Starting Laravel application..."' >> /start.sh && \
     echo 'php artisan migrate --force || echo "Migration failed, continuing..."' >> /start.sh && \
     echo 'php artisan config:clear' >> /start.sh && \
+    echo 'php artisan cache:clear' >> /start.sh && \
     echo 'php artisan config:cache' >> /start.sh && \
     echo 'echo "Tailing Laravel logs in background..."' >> /start.sh && \
     echo 'tail -f storage/logs/laravel.log &' >> /start.sh && \
