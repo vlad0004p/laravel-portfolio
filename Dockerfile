@@ -1,52 +1,88 @@
-# Let's start with a very basic setup to isolate the issue
 FROM php:8.2-apache
 
-# Install only essential extensions
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    libpq-dev \
+    libpq-dev curl \
     && docker-php-ext-install pdo pdo_pgsql \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Enable Apache rewrite module
+# Enable Apache modules
 RUN a2enmod rewrite
-
-# Set ServerName to avoid warnings
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
-
-# Copy everything
-COPY . /var/www/html/
-
-# Install Composer
-COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Install dependencies
-RUN composer install --no-dev --optimize-autoloader || echo "Composer install failed"
+# Copy application
+COPY . .
 
-# Create basic test files
-RUN echo "<?php phpinfo(); ?>" > /var/www/html/public/phpinfo.php
-RUN echo "<h1>Basic HTML Test</h1><p>If you see this, Apache is working</p>" > /var/www/html/public/test.html
+# Install Composer
+COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
+
+# Install PHP dependencies with error handling
+RUN composer install --no-dev --optimize-autoloader --no-interaction || \
+    (echo "Composer install failed, trying without optimization..." && \
+     composer install --no-dev --no-interaction)
 
 # Set Apache DocumentRoot
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Create storage directories
-RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache
+# Create Laravel directories with full paths
+RUN mkdir -p /var/www/html/storage/logs \
+             /var/www/html/storage/framework/cache \
+             /var/www/html/storage/framework/sessions \
+             /var/www/html/storage/framework/views \
+             /var/www/html/bootstrap/cache
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html \
-    && chmod -R 775 storage bootstrap/cache
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Show structure for debugging
-RUN echo "=== Directory Structure ===" && \
-    ls -la /var/www/html/ && \
-    echo "=== Public Directory ===" && \
-    ls -la /var/www/html/public/
+# Create a startup script for better debugging
+RUN cat > /startup.sh << 'EOF'
+#!/bin/bash
+set -e
+
+echo "=== STARTUP DEBUG ==="
+echo "Current directory: $(pwd)"
+echo "User: $(whoami)"
+echo "PHP version: $(php -v | head -n1)"
+
+echo "=== CHECKING LARAVEL ==="
+if [ -f "artisan" ]; then
+    echo "✓ artisan file found"
+    php artisan --version || echo "✗ artisan failed"
+else
+    echo "✗ artisan file not found"
+fi
+
+echo "=== CHECKING ENVIRONMENT ==="
+if [ -f ".env" ]; then
+    echo "✓ .env file found"
+else
+    echo "✗ .env file not found"
+fi
+
+echo "=== CHECKING PERMISSIONS ==="
+ls -la storage/ | head -5
+ls -la bootstrap/cache/ | head -3
+
+echo "=== TESTING APACHE CONFIG ==="
+apache2ctl configtest
+
+echo "=== TESTING PHP ==="
+php -r "echo 'PHP test: OK\n';"
+
+echo "=== STARTING APACHE ==="
+exec apache2-foreground
+EOF
+
+RUN chmod +x /startup.sh
 
 EXPOSE 80
-CMD ["apache2-foreground"]
+
+# Use the startup script
+CMD ["/startup.sh"]
