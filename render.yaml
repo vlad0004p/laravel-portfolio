@@ -14,7 +14,7 @@ services:
       - key: APP_KEY
         value: base64:xBjDMNEY8X2kfIIKrvpsHyLIabhyHsSDde2oyzUDDpo=
       - key: APP_DEBUG
-        value: false
+        value: true  # Enable debug temporarily
       - key: APP_URL
         fromService:
           type: web
@@ -35,18 +35,31 @@ services:
       - key: LOG_CHANNEL
         value: stack
       - key: LOG_LEVEL
-        value: error
+        value: debug
       - key: CACHE_DRIVER
         value: file
       - key: SESSION_DRIVER
         value: file
       - key: QUEUE_CONNECTION
         value: sync
+      # Additional debugging vars
+      - key: FILESYSTEM_DISK
+        value: local
+      - key: SESSION_LIFETIME
+        value: 120
     buildCommand: |
       echo "Build completed in Dockerfile"
     startCommand: |
+      echo "Starting Laravel application..." &&
+      php artisan config:clear &&
+      php artisan cache:clear &&
+      php artisan storage:link --force &&
       php artisan config:cache &&
       php artisan route:cache &&
       php artisan view:cache &&
+      echo "Running migrations..." &&
       php artisan migrate --force &&
+      echo "Checking public directory..." &&
+      ls -la public/ &&
+      echo "Starting Apache..." &&
       apache2-foreground

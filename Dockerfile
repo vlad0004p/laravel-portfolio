@@ -1,13 +1,4 @@
-# Stage 1: Node.js build for assets
-FROM node:18-alpine AS node-build
-
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
-
-# Stage 2: Composer build
+# Stage 1: Composer build
 FROM composer:2.6 AS composer-build
 
 WORKDIR /app
@@ -16,7 +7,7 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 COPY . .
 RUN composer install --no-dev --prefer-dist --no-progress --no-interaction --optimize-autoloader
 
-# Stage 3: PHP + Apache Runtime
+# Stage 2: PHP + Apache Runtime
 FROM php:8.2-apache
 
 # Install system dependencies and PHP extensions for Laravel + PostgreSQL
@@ -35,9 +26,6 @@ WORKDIR /var/www/html
 # Copy Laravel app from composer build stage
 COPY --from=composer-build /app /var/www/html
 
-# Copy built assets from node build stage
-COPY --from=node-build /app/public/build /var/www/html/public/build
-
 # Set Apache DocumentRoot to Laravel's public folder
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 
@@ -52,6 +40,9 @@ RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions sto
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html \
     && chmod -R 775 storage bootstrap/cache
+
+# Create storage symlink for file access
+RUN php artisan storage:link || true
 
 # Expose Apache port
 EXPOSE 80
