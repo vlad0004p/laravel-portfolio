@@ -6,57 +6,6 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
-// Add this health check route at the top
-Route::get('/health', function () {
-    return response()->json([
-        'status' => 'ok',
-        'timestamp' => now()->toISOString(),
-        'environment' => app()->environment(),
-        'php_version' => PHP_VERSION,
-        'laravel_version' => app()->version()
-    ]);
-});
-
-// Simple debug route to check environment
-Route::get('/env-debug', function () {
-    return response()->json([
-        'APP_DEBUG' => $_ENV['APP_DEBUG'] ?? 'not set',
-        'APP_DEBUG_config' => config('app.debug'),
-        'APP_ENV' => $_ENV['APP_ENV'] ?? 'not set',
-        'all_env_keys' => array_keys($_ENV)
-    ]);
-});
-
-// Debug route to test view rendering
-Route::get('/debug', function () {
-    try {
-        return response()->json([
-            'views_exist' => [
-                'welcome' => view()->exists('welcome'),
-                'layouts.app' => view()->exists('layouts.app'),
-            ],
-            'storage_writable' => is_writable(storage_path()),
-            'cache_writable' => is_writable(storage_path('framework/cache')),
-            'env_vars' => [
-                'APP_ENV' => env('APP_ENV'),
-                'APP_DEBUG' => env('APP_DEBUG'),
-                'DB_CONNECTION' => env('DB_CONNECTION'),
-            ]
-        ]);
-    } catch (Exception $e) {
-        return response()->json([
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ], 500);
-    }
-});
-
-// Simple test route that doesn't use views
-Route::get('/test', function () {
-    return '<h1>Simple Test Route Works!</h1><p>Laravel is running properly.</p>';
-});
-
-
 /*
 |--------------------------------------------------------------------------
 | Public route: Welcome page

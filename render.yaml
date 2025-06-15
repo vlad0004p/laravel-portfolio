@@ -8,17 +8,18 @@ services:
     dockerfilePath: ./Dockerfile
     envVars:
       - key: APP_NAME
-        value: "Laravel Portfolio"
+        value: "Polly's Website"
       - key: APP_ENV
         value: production
       - key: APP_KEY
         value: base64:xBjDMNEY8X2kfIIKrvpsHyLIabhyHsSDde2oyzUDDpo=
       - key: APP_DEBUG
-        value: "true"
+        value: false
       - key: APP_URL
-        value: https://laravel-portfolio-2mkg.onrender.com
-      - key: FORCE_HTTPS
-        value: true
+        fromService:
+          type: web
+          name: laravel-portfolio
+          property: host
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
@@ -31,3 +32,21 @@ services:
         value: laravel_portfolio_db_3k2n_user
       - key: DB_PASSWORD
         value: HgjNNxdG1JqVqIBo8PwIQsudR3IBJTNK
+      - key: LOG_CHANNEL
+        value: stack
+      - key: LOG_LEVEL
+        value: error
+      - key: CACHE_DRIVER
+        value: file
+      - key: SESSION_DRIVER
+        value: file
+      - key: QUEUE_CONNECTION
+        value: sync
+    buildCommand: |
+      echo "Build completed in Dockerfile"
+    startCommand: |
+      php artisan config:cache &&
+      php artisan route:cache &&
+      php artisan view:cache &&
+      php artisan migrate --force &&
+      apache2-foreground
