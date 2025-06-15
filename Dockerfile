@@ -1,31 +1,45 @@
+# Stage 1: Build dependencies
+FROM composer:2.6 AS build-stage
+
+WORKDIR /app
+
+# Allow Composer to run as root
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
+# Copy only composer files first to leverage Docker cache
+COPY composer.json composer.lock ./
+
+# Install PHP dependencies without dev tools
+RUN composer install --no-dev --prefer-dist --no-progress --no-interaction
+
+# Copy the rest of the app files
+COPY . .
+
+# Stage 2: Runtime environment
 FROM php:8.2-apache
 
-# Enable mod_rewrite
+# Enable Apache rewrite module
 RUN a2enmod rewrite
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Install PHP extensions and Composer
-RUN apt-get update && apt-get install -y unzip libzip-dev zip && docker-php-ext-install zip pdo pdo_mysql
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Copy app files from build stage
+COPY --from=build-stage /app /var/www/html
 
-# Copy composer files and install dependencies
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --prefer-dist --no-progress --no-interaction
+# Set correct permissions (Apache user)
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html
 
-# Copy full application
-COPY . .
-
-# Set Apache doc root
+# Set document root if needed (for Laravel public folder)
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
-# Laravel setup commands (optional but ideal)
-RUN php artisan config:cache && php artisan route:cache
+# Update Apache config for new document root
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf && \
+    sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html && chmod -R 755 /var/www/html
-
+# Expose Apache HTTP port
 EXPOSE 80
+
+# Start Apache in foreground
+CMD ["apache2-foreground"]
