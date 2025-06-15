@@ -29,8 +29,6 @@ RUN php artisan key:generate
 # Build frontend
 RUN npm install && npm run build
 
----
-
 # Stage 2: Runtime environment with Apache
 FROM php:8.2-apache
 
